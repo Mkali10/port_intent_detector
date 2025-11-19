@@ -18,6 +18,8 @@ You can install directly from your GitHub repository (assuming your repo is publ
 # Clone your Mkali10 repo (if not already done)
 git clone https://github.com/Mkali10/port_intent_detector.git
 cd port-intent-detector
+python3 -m venv venv
+source venv/bin/activate
 
 # Install via pip
 pip install .
