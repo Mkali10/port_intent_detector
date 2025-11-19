@@ -23,3 +23,6 @@ source venv/bin/activate
 
 # Install via pip
 pip install .
+
+# Run 
+port-intent
