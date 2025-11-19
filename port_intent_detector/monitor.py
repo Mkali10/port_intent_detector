@@ -1,17 +1,17 @@
 # port_intent_detector
 
 import psutil
+import socket
 import time
 from port_intent_detector.intent_map import get_intent
-
 
 class ConnectionInfo:
     def __init__(self, pid, laddr, raddr, status, proto):
         self.pid = pid
-        self.laddr = laddr  # (ip, port)
-        self.raddr = raddr  # (ip, port)
+        self.laddr = laddr
+        self.raddr = raddr
         self.status = status
-        self.proto = proto  # 'tcp' or 'udp'
+        self.proto = proto
         try:
             self.process = psutil.Process(pid)
             self.name = self.process.name()
@@ -32,26 +32,17 @@ class ConnectionInfo:
                 f"{self.laddr} -> {self.raddr} proto={self.proto} status={self.status}>")
 
 def scan_connections():
-    """
-    Scans current outbound connections, returns a list of ConnectionInfo.
-    Only pick connections that have remote address.
-    """
     conns = psutil.net_connections(kind='inet')
     results = []
     for c in conns:
-        # Only outbound (i.e., has remote addr)
         if not c.raddr:
             continue
-        proto = 'tcp' if c.type == psutil.SOCK_STREAM else 'udp'
+        proto = 'tcp' if c.type == socket.SOCK_STREAM else 'udp'
         ci = ConnectionInfo(c.pid, c.laddr, c.raddr, c.status, proto)
         results.append(ci)
     return results
 
 def monitor(poll_interval=2.0):
-    """
-    Continuously monitor connections every poll_interval seconds.
-    When it sees a *new connection*, prints the intent + process details.
-    """
     seen = set()
     try:
         while True:
